@@ -1,0 +1,192 @@
+#!/bin/bash
+
+################################################################################
+# Function:
+#           Script to setup personal working environment on Linux server.
+#
+# Revision: 1.0   Refctoried from .xenv.
+#                 Extracted general part and keep them on .penv, and moved
+#                 project specific parts to sperate scripts as optional.
+#                 
+# Author:   EXANTNG/samuel.x.tang@gmail.com
+################################################################################
+
+
+################################################################################
+# Configure the parameters in this area:
+
+# Target nodes on which the batch operations will be executed.
+nodeList='ssm182 sdd180 mts189 spp186 sws190'
+
+# Extract base file from the absolute path of this script.
+absoluteNameOfThisScript=$(readlink -f $BASH_SOURCE)
+grandParentDir=$(dirname $(dirname $absoluteNameOfThisScript))
+rootDir="${grandParentDir}/"
+
+binDir="${rootDir}bin/"
+logDir="${rootDir}log/"
+backupDir="${rootDir}backup/"
+
+PATH="$PATH:$binDir"
+
+# Create the directories if not exist.
+for eachDir in $rootDir $binDir $logDir $backupDir
+do
+    [ ! -d ${eachDir} ] && mkdir -pv ${eachDir}
+done
+
+# Change the backup directory permission mode to 777 if needed.
+permission_octal="$(stat -c %a $backupDir)"
+[ "$permission_octal" == "777" ] || chmod -v 777 $backupDir
+
+# End of area
+################################################################################
+
+
+################################################################################
+# Set prompt statement 1 (PS1).
+
+# Set mapping from hostname to display name in PS1.
+node_name_mapping="
+ecm.lab.ericsson.se SHCO
+AY140719225026556834Z ALISG
+pg.lab.ericsson.se SHPG
+"
+
+node_name=$(echo -ne "${node_name_mapping}" | grep -w ^$(hostname) | cut -d ' ' -f 2)
+# Fallback node name with full hostname
+#node_name=${node_name:=$(hostname)}
+[ -z $node_name ] && node_name=$(hostname)
+
+PATH=$PATH:${binDir}
+PS1="\\[$(tput bold)$(tput setf 4)\\]\u\\[$(tput setf 1)\\]|\\[$(tput setf 5)\\]\${node_name}\\[$(tput setf 2)\\]@\$(date +%H%M):\\[$(tput setf 1)\\]\w\n> \\[$(tput sgr0)\\]"
+
+export PATH PS1
+# End of setting prompt statement 1 (PS1).
+################################################################################
+
+
+# Set session timeout value in second.
+TMOUT=86400
+
+export TMOUT
+
+
+################################################################################
+# Declare aliases
+alias ls='ls --color=auto'
+alias ll='ls -l'
+alias l='ls -l --color=auto'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+which vim > /dev/null 2>&1 && alias vi='vim'
+alias view='vi -R'
+alias ssh='ssh -o StrictHostKeyChecking=no'
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+alias curTime='getCurrentTimeString'
+alias xh="cd $rootDir"
+alias watch='watch -d'
+# End of Area
+################################################################################
+
+
+# Function to execute command(s) in multiple remote servers.
+function cta()
+{
+    for wn in ${nodeList}
+    do
+        echo -en "\n===============\n$wn:\n\n"
+        ssh -q $wn "$*"
+    done
+}
+
+# Function to backup file or directory.
+# Command: bk <target-file-or-dir> [<comment>]
+# Example: bk /etc/sysconfig/network/routes beforeAddRoutingToMTS19
+function bk()
+{
+    # Validate inputs
+    local numberOfParas=${#}
+    if [[ "${numberOfParas}" -lt 1 ]]
+    then
+        echo "Error: At least one parameter required."
+        echo "Example: bk <target-file-or-dir> [<comment>]"
+        return 1
+    fi
+    # End of inputs validation
+
+    local __originFile=$1
+    local originFile="${__originFile}"
+    local __backupDir="$(dirname $1)/backup/"
+    local backupFile="$(basename $1)"
+
+    local comment='_backup'
+    if [[ -n ${2} ]]
+    then
+        comment="_${2}"
+    fi
+    
+    if [ -n ${backupDir} ]
+    then
+        __backupDir="${backupDir}"
+    fi
+
+    # If source file is not a Directory, try to got the version of source file.
+    if [ ! -d $originFile ]
+    then
+        # Get version information
+        #grep -q '^# Version:' $originFile && versionLevel="$(grep '^# Version:' $originFile | awk '{print $3}')"
+        grep -q '^# Version:' $originFile && versionLevel="$(awk '$0~/^# Version:/ {print $3}' $originFile)"
+
+        if grep -q '^# Initail:' $originFile
+        then
+            versionLevel="$(tac $originFile | grep -m 1 '^# Initail:' | awk '{print $3}')"
+        fi
+
+        if grep -q '^# Revision:' $originFile
+        then
+            versionLevel="$(tac $originFile | grep -m 1 '^# Revision:' | awk '{print $3}')"
+        fi
+    fi
+
+    if [[ ${originFile:0:1} = '.' ]]
+    then
+        local hideName="${originFile:0:1}"
+        originFile="${originFile:1}"
+    fi
+
+    #backupFile=$(date "+${__backupDir}${backupFile}_%Z%Y%m%d_%H%M%S.bk")
+    baseName="${originFile%\.*}"
+    extentionName=$(echo -ne "$originFile" | grep -oE '\.([^\.]\w+)$')
+    #echo "extentionName: $extentionName"
+
+    # Build backup file name with full path, base name, addional info, timestamp and extention name.
+    backupFile=$(date "+${__backupDir}${hideName}${baseName}${comment}_%Z%Y%m%d_%H%M%S${extentionName}")
+
+    [ -d $__backupDir ] || mkdir -vp $__backupDir
+
+    #cp -rvp $originFile $backupFile
+    echo "backupFile: $backupFile"
+    cp -rvp "${__originFile}" "${backupFile}"
+}
+
+
+function getCurrentTimeString()
+{
+    local currentTimeString=$(date '+%z_%Y%m%d_%H%M%S')
+    echo -ne "${currentTimeString}"
+}
+
+
+function backupSES()
+{
+    for i in $nodeList;do ssh -q $i 'rm -v /tmp/backup/BK_${HOST}_*.tar.gz;/var/tmp/st/sbk/sbk.sh -t ${HOST:0:3} --debug';done
+    for i in $nodeList;do scp $i:/tmp/backup/BK_${i}_*.tar.gz /var/tmp/st/backup/;done
+}
+
+
+################################################################################
+# TBD: source project specific env scripts if exist.
+################################################################################
