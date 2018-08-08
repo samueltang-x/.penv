@@ -1,0 +1,52 @@
+#!/bin/bash
+
+################################################################################
+# Function:
+#           Script to setup personal working environment on SES VM.
+#
+# Revision: 1.0   Refctoried from .xenv.
+#                 Extracted general part and keep them on .penv, and moved
+#                 project specific parts to sperate scripts as optional.
+#                 
+# Author:   EXANTNG/samuel.x.tang@gmail.com
+################################################################################
+
+PATH=$PATH:/var/tmp/exantng/sestool
+
+################################################################################
+# SES alias section
+alias mieplog='cd /var/log/miep'
+alias seslog='cd /var/log/ses/service'
+alias confdir='cd /opt/miep/etc/config'
+alias vg1='vglog 1'
+alias vg2='vglog 2'
+alias vg3='vglog 3'
+alias vg5='vglog 5'
+alias vg6='vglog 6'
+alias trlog='troubleshootingLog'
+
+alias mbf='xbf -k $(configctrl get prsManageAccountUrlPostDataBlowfishCipherKey) -i $(configctrl get prsManageAccountUrlPostDataBlowfishCipherIV)'
+alias sbf='xbf -k $(configctrl get prsSignUpPostdataBlowfishCipherKey) -i $(configctrl get prsSignUpPostdataBlowfishCipherIV)'
+
+alias vha="cd $rootDir/vha"
+alias swc="cd $rootDir/swisscom"
+alias smc="cd $rootDir/smc"
+# End of Area
+################################################################################
+
+
+## Functions
+function vglog()
+{
+    local vgIndex=$1
+    local vgNodeIp=$(configctrl get apsVg${vgIndex}NodeIp)
+    echo -e "Following logs with command:\n\
+        tail -f /var/log/miep/PALSCRIPTLOG_whttp.txt | grep -w VG$vgIndex | grep -v $vgNodeIp\n"
+    tail -f /var/log/miep/PALSCRIPTLOG_whttp.txt | grep -w VG$vgIndex | grep -v $vgNodeIp
+}
+
+function troubleshootingLog()
+{
+    echo 'Following logs with command: pallogviewer -f /var/log/miep/troubleshooter_log.xml'
+    pallogviewer -f /var/log/miep/troubleshooter_log.xml
+}
