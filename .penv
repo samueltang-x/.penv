@@ -58,7 +58,7 @@ node_name=$(echo -ne "${node_name_mapping}" | grep -w ^$(hostname) | cut -d ' ' 
 #node_name=${node_name:=$(hostname)}
 [ -z $node_name ] && node_name=$(hostname -s)
 
-PATH=$PATH:${binDir}
+PATH=$PATH:${binDir}:${rootDir}
 PS1="\\[$(tput bold)$(tput setf 4)\\]\u\\[$(tput setf 1)\\]|\\[$(tput setf 5)\\]\${node_name}\\[$(tput setf 2)\\]@\$(date +%H%M):\\[$(tput setf 1)\\]\w\n> \\[$(tput sgr0)\\]"
 
 export PATH PS1
