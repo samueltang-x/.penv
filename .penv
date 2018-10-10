@@ -151,15 +151,15 @@ function bk()
         fi
     fi
 
-    if [[ ${originFile:0:1} = '.' ]]
+    if [[ ${backupFile:0:1} = '.' ]]
     then
-        local hideName="${originFile:0:1}"
-        originFile="${originFile:1}"
+        local hideName="${backupFile:0:1}"
+        backupFile="${backupFile:1}"
     fi
 
     #backupFile=$(date "+${__backupDir}${backupFile}_%Z%Y%m%d_%H%M%S.bk")
-    baseName="${originFile%\.*}"
-    extentionName=$(echo -ne "$originFile" | grep -oE '\.([^\.]\w+)$')
+    baseName="${backupFile%\.*}"
+    extentionName=$(echo -ne "$backupFile" | grep -oE '\.([^\.]\w+)$')
     #echo "extentionName: $extentionName"
 
     # Build backup file name with full path, base name, addional info, timestamp and extention name.
