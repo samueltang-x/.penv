@@ -56,7 +56,7 @@ pg.lab.ericsson.se SHPG
 node_name=$(echo -ne "${node_name_mapping}" | grep -w ^$(hostname) | cut -d ' ' -f 2)
 # Fallback node name with full hostname
 #node_name=${node_name:=$(hostname)}
-[ -z $node_name ] && node_name=$(hostname -s)
+[ -z $node_name ] && node_name=${HOSTNAME%%.*}
 
 PATH=$PATH:${binDir}:${rootDir}
 PS1="\\[$(tput bold)$(tput setf 4)\\]\u\\[$(tput setf 1)\\]|\\[$(tput setf 5)\\]\${node_name}\\[$(tput setf 2)\\]@\$(date +%H%M):\\[$(tput setf 1)\\]\w\n> \\[$(tput sgr0)\\]"
