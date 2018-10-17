@@ -20,8 +20,9 @@ nodeList='ssm182 sdd180 mts189 spp186 sws190'
 
 # Extract base file from the absolute path of this script.
 absoluteNameOfThisScript=$(readlink -f $BASH_SOURCE)
-grandParentDir=$(dirname $(dirname $absoluteNameOfThisScript))
-rootDir="${grandParentDir}/"
+parentDir="$(dirname ${absoluteNameOfThisScript})/"
+grandParentDir="$(dirname ${parentDir})/"
+rootDir="${grandParentDir}"
 
 binDir="${rootDir}bin/"
 logDir="${rootDir}log/"
@@ -190,3 +191,7 @@ function backupSES()
 ################################################################################
 # TBD: source project specific env scripts if exist.
 ################################################################################
+specificSourceList=$( ls ${parentDir}.proj-*)
+for sourceFile in ${specificSourceList}
+  do source ${sourceFile}
+done
