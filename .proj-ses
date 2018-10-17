@@ -24,6 +24,7 @@ alias vg3='vglog 3'
 alias vg5='vglog 5'
 alias vg6='vglog 6'
 alias trlog='troubleshootingLog'
+alias agwlog='tail -f /var/log/ses/service/apigateway.log | jsonlogviewer -L'
 
 alias mbf='xbf -k $(configctrl get prsManageAccountUrlPostDataBlowfishCipherKey) -i $(configctrl get prsManageAccountUrlPostDataBlowfishCipherIV)'
 alias sbf='xbf -k $(configctrl get prsSignUpPostdataBlowfishCipherKey) -i $(configctrl get prsSignUpPostdataBlowfishCipherIV)'
@@ -44,6 +45,15 @@ function vglog()
         tail -f /var/log/miep/PALSCRIPTLOG_whttp.txt | grep -w VG$vgIndex | grep -v $vgNodeIp\n"
     tail -f /var/log/miep/PALSCRIPTLOG_whttp.txt | grep -w VG$vgIndex | grep -v $vgNodeIp
 }
+
+function nvglog()
+{
+    local vgIndex=$1
+    echo -e "Following logs with command:\n\
+        tail -f /var/log/miep/PALSCRIPTLOG_whttp.txt | grep -w VG$vgIndex\n"
+    tail -f /var/log/miep/PALSCRIPTLOG_whttp.txt | grep -w VG$vgIndex
+}
+
 
 function troubleshootingLog()
 {
