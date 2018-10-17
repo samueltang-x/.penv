@@ -191,7 +191,8 @@ function backupSES()
 ################################################################################
 # TBD: source project specific env scripts if exist.
 ################################################################################
-specificSourceList=$( ls ${parentDir}.proj-*)
+specificSourceList=$(ls ${parentDir}.proj-*)
 for sourceFile in ${specificSourceList}
-  do source ${sourceFile}
+do
+  source ${sourceFile}
 done
