@@ -32,6 +32,8 @@ alias sbf='xbf -k $(configctrl get prsSignUpPostdataBlowfishCipherKey) -i $(conf
 alias vha="cd $rootDir/vha"
 alias swc="cd $rootDir/swisscom"
 alias smc="cd $rootDir/smc"
+alias jsdir='cd /opt/miep/etc/scripting'
+alias jl='jsonlog'
 # End of Area
 ################################################################################
 
@@ -67,4 +69,13 @@ function removeUselessTellog()
   do
     echo $i; xmllint --format $i | grep -A 1 '<actionList>' | grep -vE '<actionList>|--|customercareService' || rm -v $i
   done
+}
+
+function jsonlog() {
+  echo -e "input: $1"
+  local filterName=$1
+  echo -e "filtername: $filterName"
+  local names=$(find /var/log/ses/service/ -name *${filterName}*)
+  echo -e "name: $names"
+  tail -f $names | jsonlogviewer -L
 }
