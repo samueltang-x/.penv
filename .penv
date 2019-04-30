@@ -187,6 +187,19 @@ function backupSES()
     for i in $nodeList;do scp $i:/tmp/backup/BK_${i}_*.tar.gz /var/tmp/st/backup/;done
 }
 
+# git config
+alias gite='configGit exantng xiangyuan.tang@ericsson.com'
+alias gits='configGit "Samuel Tang" samuel.x.tang@gmail.com'
+
+function configGit() {
+  local userName=$1
+  local email=$2
+  git config user.name "$userName"
+  git config user.email "$email"
+}
+
+# end of git config
+
 
 ################################################################################
 # TBD: source project specific env scripts if exist.
