@@ -61,6 +61,7 @@ node_name=$(echo -ne "${node_name_mapping}" | grep -w ^$(hostname) | cut -d ' ' 
 
 PATH=$PATH:${binDir}:${rootDir}
 PS1="\\[$(tput bold)$(tput setf 4)\\]\u\\[$(tput setf 1)\\]|\\[$(tput setf 5)\\]\${node_name}\\[$(tput setf 2)\\]@\$(date +%H%M):\\[$(tput setf 1)\\]\w\n> \\[$(tput sgr0)\\]"
+uname -v | grep -q Ubuntu && PS1='\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u|\h@$(date +%H%M)\[\033[00m\]:\[\033[01;34m\]\w\n>\[\033[00m\] '
 
 export PATH PS1
 # End of setting prompt statement 1 (PS1).
@@ -89,6 +90,8 @@ alias egrep='egrep --color=auto'
 alias curTime='getCurrentTimeString'
 alias xh="cd $rootDir"
 alias watch='watch -d'
+alias 'entslint'='sed -i "s/#tslint/tslint/" scripts/lint.sh; sed -i "s/echo tsfmt/tsfmt/" package.json'
+alias 'distslint'='grep -q "#tslint" scripts/lint.sh || sed -i "s/tslint/#tslint/" scripts/lint.sh; grep -q "echo tsfmt" package.json || sed -i "s/tsfmt/echo tsfmt/" package.json'
 # End of Area
 ################################################################################
 
@@ -209,3 +212,14 @@ for sourceFile in ${specificSourceList}
 do
   source ${sourceFile}
 done
+
+
+function gits() {
+  git config --global user.name 'Samuel Tang'
+  git config --global user.email 'samuel.x.tang@gmail.com'
+}
+
+function gite() {
+  git config --global user.name 'Xiangyuan Tang'
+  git config --global user.email 'xiangyuan.tang@ericsson.com'
+}
