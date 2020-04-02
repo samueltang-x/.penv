@@ -92,6 +92,10 @@ alias xh="cd $rootDir"
 alias watch='watch -d'
 alias 'entslint'='sed -i "s/#tslint/tslint/" scripts/lint.sh; sed -i "s/echo tsfmt/tsfmt/" package.json'
 alias 'distslint'='grep -q "#tslint" scripts/lint.sh || sed -i "s/tslint/#tslint/" scripts/lint.sh; grep -q "echo tsfmt" package.json || sed -i "s/tsfmt/echo tsfmt/" package.json'
+
+# git alias
+alias gcdate='git commit --amend --no-edit --date="$(date "+%a %b %d %T %Y")"'
+
 # End of Area
 ################################################################################
 
