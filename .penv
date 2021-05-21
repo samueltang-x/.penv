@@ -185,6 +185,13 @@ function bk()
     cp -rvp "${__originFile}" "${backupFile}"
 }
 
+function runts ()
+{
+    tsFile=${1};
+    jsFile=${tsFile/.ts/.js};
+    tsc -t es2017 -m commonjs $tsFile;
+    node $jsFile
+}
 
 function getCurrentTimeString()
 {
