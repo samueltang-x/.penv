@@ -46,3 +46,6 @@ nnoremap <CR> :noh<CR><CR>:<backspace>
 "so ~/.vim/plugins.vim
 "so ~/.vim/plugin-config.vim
 so ~/.vim/autoclose.vim
+
+set colorcolumn=81
+highlight ColorColumn ctermbg=0 guibg=lightgrey
