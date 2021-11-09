@@ -13,6 +13,13 @@ inoremap "; "";<left><left>
 inoremap (; ();<left><left>
 inoremap [; [];<left><left>
 inoremap {; {};<left><left>
+  "autoclose with : and position cursor to write text inside
+inoremap ': '':<left><left>
+inoremap `: ``:<left><left>
+inoremap ": "":<left><left>
+inoremap (: ():<left><left>
+inoremap [: []:<left><left>
+inoremap {: {}:<left><left>
   "autoclose with , and position cursor to write text inside
 inoremap ', '',<left><left>
 inoremap `, ``,<left><left>

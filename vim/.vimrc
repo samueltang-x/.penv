@@ -47,5 +47,5 @@ nnoremap <CR> :noh<CR><CR>:<backspace>
 "so ~/.vim/plugin-config.vim
 so ~/.vim/autoclose.vim
 
-set colorcolumn=81
-highlight ColorColumn ctermbg=0 guibg=lightgrey
+:execute "set colorcolumn=" . join(range(81, 120), ',')
+highlight ColorColumn ctermbg=238 guibg=lightgrey
